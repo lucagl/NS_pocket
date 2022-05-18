@@ -1,4 +1,4 @@
-# MIT License
+# GNU GENERAL PUBLIC LICENSE
 
 #   **  Copyright (c) 2022 Luca Gagliardi   ** 
 #       Affiliation: Istituto Italiano di Tecnologia
