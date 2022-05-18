@@ -1,0 +1,31 @@
+#!/bin/bash  
+#Setting python virtual environmen:
+#if needed uncomment
+#python3 -m venv pEnvironment-env
+#source pEnvironment-env/bin/activate
+
+echo "Preparing linked NanoShaper executable"
+read -p "Continue? (enter)"
+# Getting patchelf
+	#cd patchelf
+	#./bootstrap.sh
+	#./configure --prefix="$HOME/.local"
+	#make install
+	#strip --strip-unneeded ~/.local/bin/patchelf
+	#gzip -9 ~/.local/share/man/man1/patchelf.1
+	#cd -
+	## setting NS libraries
+lib_absPATH=$(readlink -f NS_lib)
+patchelf --set-rpath $lib_absPATH/ NanoShaper
+patchelf --set-interpreter $lib_absPATH/ld-linux-x86-64.so.2 NanoShaper
+patchelf --add-needed librt.so.1 NanoShaper
+patchelf --add-needed libpthread.so.0 NanoShaper
+echo "Fixng ownership"
+chmod +x NanoShaper
+chmod +x NS_lib/*
+sleep 1
+echo "copying NanoShaper executable to run folder (/temp)"
+cp NanoShaper ../temp/
+echo "CHECK: ldd NanoShaper:"
+ldd NanoShaper
+
