@@ -1,6 +1,6 @@
-# MIT License
+# GNU GENERAL PUBLIC LICENSE
 
-#   **  Copyright (c) 2022 Luca Gagliardi   ** 
+#   **  NS_pocket  Copyright (C) 2022  Luca Gagliardi
 #       Affiliation: Istituto Italiano di Tecnologia
 #
 # DESCRIPTION:
@@ -148,9 +148,30 @@ def savePQR(atomsLines,resMap,ind,outFolder):
 
 
 def main():
+    import getopt
+    argv = sys.argv[1:]
+    makeOFF=False
+    try:
+        opts, args = getopt.getopt(argv,"h",["off","help","boolMAP"])
+    except getopt.GetoptError:
+        print ('<<ERROR>> Uncorrect formatting of options or unavaible option')
+        sys.exit(2)
+    # print('options:',opts)
+    # print('arguments:',args)
+    for opt, arg in opts:
+        if opt in ["-h","--help"]:
+            print('Usage:\npython3 NS_pocketVol <structure_name> (in PQR format)')
+            print("OPTIONS:")
+            print("--off: stores pockets in off format")
+            print("--boolMAP: a single _labelled.pqr file with dummy integers in the Charge field of the original PQR:\n\t0=not associated to any binding site.\n\t1-->10 belonging to pocket with rank given by the integer")
+            input('\n')
+            sys.exit()
+        elif opt == '--off':
+            makeOFF=True
+        elif opt == '--boolMAP':
+            makeMAP=True
 
-
-    filename = sys.argv[1:][0]
+    filename = args[0] #sys.argv[1:][0]
     match =re.match("(.+)\.pqr",filename)
     if(match):
         structureName = match.groups()[0]
@@ -218,23 +239,52 @@ def main():
     print("Largest volume = ",np.amax(vol))
     print("Smallest volume = ",np.amin(vol))
 
-    infoFile = open(structureName+"_infoPockets.txt",'w')
-
+    summaryFile = open(outFolder+structureName+"_infoPockets.txt",'w')
+    boolmap = {}
     for ind,line in enumerate(infoLines):
         patoms = [int(l)-1 for l in line.split()]
         # print(patoms)
         # input() 
-        infoFile.write("Pocket %d\n  Vol=%.2f\n"%(ind+1,np.round(vol[ind],2)))
-        savePQR(patoms,resMap,ind,outFolder)
-        subprocess.run(['mv',runFolder+"cav_tri"+str(sortedInd[ind])+".off",outFolder+'p'+str(ind+1)+".off"])
+        summaryFile.write("Pocket %d\n  Vol=%.2f\n"%(ind+1,np.round(vol[ind],2)))
+        if(makeMAP):
+            #create mapping
+            for pindex in patoms:
+                boolmap[pindex] = ind+1   
+        else:
+            savePQR(patoms,resMap,ind,outFolder)
+        if(makeOFF):
+            subprocess.run(['mv',runFolder+"cav_tri"+str(sortedInd[ind])+".off",outFolder+'p'+str(ind+1)+".off"])
+    
 
+    # print(boolmap)
     # Save structure tringulation
-    subprocess.run(['mv',runFolder+"triangulatedSurf.off",outFolder+structureName+".off"])
+    if(makeOFF):
+        subprocess.run(['mv',runFolder+"triangulatedSurf.off",outFolder+structureName+".off"])
+
+    if(makeMAP):
+        outMap = open(outFolder+structureName+"_labelled.pqr",'w')
+        for ind in range(len(resMap)):
+            if ind in boolmap.keys():
+                dummyCharge = boolmap[ind]
+            else: 
+                dummyCharge = 0
+            try:
+                rChain = resMap[ind]['resChain']
+            except KeyError:
+                rChain = 'A'
+            # outMap.write(str(boolmap[i])+'\n')
+
+            outMap.write("{:<6s}{:>5d} {:<5s}{:>3s} {:1s}{:>5s}   {:>8.3f} {:>8.3f} {:>8.3f} {:>8.4f} {:>8.4f}\n".format('ATOM',resMap[ind]['atomNumber'],
+            resMap[ind]['resAtom'],resMap[ind]['resName'],rChain,resMap[ind]['resNum'],
+            resMap[ind]['coord'][0],resMap[ind]['coord'][1],resMap[ind]['coord'][2],dummyCharge,resMap[ind]['radius']))
+            
+    outMap.close()
+
 
     end=datetime.now()
     elapsed = end-start
-    infoFile.write("\n---------\nElapsed time: {}".format(elapsed))
-
+    summaryFile.write("\n---------\nElapsed time: {}".format(elapsed))
+    summaryFile.close()
 if __name__ == '__main__':
     try:
         main()
