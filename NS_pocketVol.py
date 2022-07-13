@@ -236,8 +236,9 @@ def main():
     nPockets = len(infoLines)
 
     print("Number of pockets found: ",nPockets)
-    print("Largest volume = ",np.amax(vol))
-    print("Smallest volume = ",np.amin(vol))
+    if nPockets>0:
+        print("Largest volume = ",np.amax(vol))
+        print("Smallest volume = ",np.amin(vol))
 
     summaryFile = open(outFolder+structureName+"_infoPockets.txt",'w')
     boolmap = {}
@@ -268,14 +269,14 @@ def main():
                 dummyCharge = boolmap[ind]
             else: 
                 dummyCharge = 0
-            try:
-                rChain = resMap[ind]['resChain']
-            except KeyError:
-                rChain = 'A'
+            # try:
+            #     rChain = resMap[ind]['resChain']
+            # except KeyError:
+            #     rChain = 'A'
             # outMap.write(str(boolmap[i])+'\n')
 
-            outMap.write("{:<6s}{:>5d} {:<5s}{:>3s} {:1s}{:>5s}   {:>8.3f} {:>8.3f} {:>8.3f} {:>8.4f} {:>8.4f}\n".format('ATOM',resMap[ind]['atomNumber'],
-            resMap[ind]['resAtom'],resMap[ind]['resName'],rChain,resMap[ind]['resNum'],
+            outMap.write("{:<6s}{:>5d} {:<5s}{:>3s} {:>5s}   {:>8.3f} {:>8.3f} {:>8.3f} {:>8.4f} {:>8.4f}\n".format('ATOM',resMap[ind]['atomNumber'],
+            resMap[ind]['resAtom'],resMap[ind]['resName'],resMap[ind]['resNum'],
             resMap[ind]['coord'][0],resMap[ind]['coord'][1],resMap[ind]['coord'][2],dummyCharge,resMap[ind]['radius']))
             
     outMap.close()
