@@ -242,6 +242,7 @@ def main():
 
     summaryFile = open(outFolder+structureName+"_infoPockets.txt",'w')
     boolmap = {}
+    alreadySeen=set() #to make sure first ranked pockets have priority in writing when atoms in common..
     for ind,line in enumerate(infoLines):
         patoms = [int(l)-1 for l in line.split()]
         # print(patoms)
@@ -250,7 +251,11 @@ def main():
         if(makeMAP):
             #create mapping
             for pindex in patoms:
-                boolmap[pindex] = ind+1   
+                if pindex in alreadySeen:
+                    pass
+                else:
+                    boolmap[pindex] = ind+1  
+                    alreadySeen.add(pindex)
         else:
             savePQR(patoms,resMap,ind,outFolder)
         if(makeOFF):
