@@ -151,6 +151,7 @@ def main():
     import getopt
     argv = sys.argv[1:]
     makeOFF=False
+    makeMAP=False
     try:
         opts, args = getopt.getopt(argv,"h",["off","help","boolMAP"])
     except getopt.GetoptError:
@@ -284,7 +285,7 @@ def main():
             resMap[ind]['resAtom'],resMap[ind]['resName'],resMap[ind]['resNum'],
             resMap[ind]['coord'][0],resMap[ind]['coord'][1],resMap[ind]['coord'][2],dummyCharge,resMap[ind]['radius']))
             
-    outMap.close()
+        outMap.close()
 
 
     end=datetime.now()
