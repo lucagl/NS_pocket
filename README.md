@@ -14,7 +14,7 @@ If using the first option, make sure to copy NanoShaper executable in the temp f
 
 ## Instructions
 
-Run: python3 NS_pocketVol.py <structureName>.pqr
+Run: python3 NS_pocketVol.py \<structureName\>.pqr
  
  ### Output
   A "results" folder will be created containing the structure name as a subfolder. 
