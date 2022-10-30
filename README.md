@@ -1,5 +1,5 @@
 # NS_pocket
-Python interface for the pocket detection method of the NanoShaper software **with volume ranking** (not native in NanoShaper)
+Python interface for the pocket detection method of the [NanoShaper](https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0059744) software **with volume ranking** (not native in NanoShaper)
 
 ## Requirements
 
